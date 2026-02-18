@@ -47,7 +47,8 @@ if [ "${USERNAME}" != "root" ]; then
   if [ -f "/etc/sudoers.d/${USERNAME}" ]; then
     echo "✓ Sudoers file /etc/sudoers.d/${USERNAME} created successfully"
   else
-    echo "✗ Warning: Sudoers file /etc/sudoers.d/${USERNAME} was not created!"
+    echo "✗ Error: Sudoers file /etc/sudoers.d/${USERNAME} was not created!"
+    exit 1
   fi
 
   echo "Created user '${USERNAME}' with UID 1000, GID 1000"
