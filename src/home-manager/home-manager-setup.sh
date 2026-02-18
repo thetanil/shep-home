@@ -17,9 +17,7 @@ fi
 echo "Using home-manager configuration from: ${HOME_MANAGER_GIT_URL}"
 
 # Source nix profile to ensure nix and home-manager are available
-if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-elif [ -f /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then
+if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then
     . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
 elif [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then
     . ~/.nix-profile/etc/profile.d/nix.sh

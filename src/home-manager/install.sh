@@ -18,10 +18,9 @@ fi
 # Create nix directories
 mkdir -p /nix /etc/nix /cache
 
-# Configure Nix to use /cache for store
+# Configure Nix for no-daemon mode
 cat > /etc/nix/nix.conf << 'EOF'
 experimental-features = nix-command flakes
-build-users-group = nixbld
 max-jobs = auto
 cores = 0
 sandbox = false
@@ -30,30 +29,23 @@ extra-substituters = file:///cache
 trusted-users = root @wheel
 EOF
 
-# Install Nix (multi-user installation)
-echo "Installing Nix..."
+# Install Nix (no-daemon mode as required for containers)
+echo "Installing Nix in no-daemon mode..."
 if [ ! -d /nix/store ]; then
-    # Download and run Nix installer
-    curl -L https://nixos.org/nix/install | sh -s -- --daemon --yes || {
-        echo "Failed to install Nix with daemon, trying no-daemon mode..."
-        # If daemon install fails (common in containers), try single-user
-        curl -L https://nixos.org/nix/install | sh -s -- --no-daemon --yes
-    }
+    # Download and run Nix installer in single-user mode
+    # Using --no-daemon as home-manager is CLI-only, not a persistent service
+    curl -L https://nixos.org/nix/install | sh -s -- --no-daemon --yes
 fi
 
-# Source nix profile to make nix available
-if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-elif [ -f /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then
+# Source nix profile to make nix available (no-daemon mode)
+if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then
     . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
 fi
 
 # Add nix to PATH for all users
 cat > /etc/profile.d/nix.sh << 'EOF'
-# Source Nix profile
-if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-elif [ -f /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then
+# Source Nix profile (no-daemon mode)
+if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix.sh ]; then
     . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
 fi
 EOF
