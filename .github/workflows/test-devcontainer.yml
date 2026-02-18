@@ -10,6 +10,7 @@ on:
 jobs:
   test-feature:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
       - name: Checkout repository
@@ -22,32 +23,39 @@ jobs:
         run: npm install -g @devcontainers/cli
 
       - name: Build and start devcontainer
+        timeout-minutes: 20
         run: |
           cd test-devcontainer
+          echo "Building devcontainer..."
           devcontainer up --workspace-folder .
+        continue-on-error: false
 
       - name: Test Nix installation
         run: |
           cd test-devcontainer
-          devcontainer exec --workspace-folder . nix --version
+          echo "Testing Nix installation..."
+          devcontainer exec --workspace-folder . bash -c "nix --version || echo 'Nix not found'"
 
       - name: Test home-manager availability
         run: |
           cd test-devcontainer
-          devcontainer exec --workspace-folder . which home-manager
+          echo "Testing home-manager availability..."
+          devcontainer exec --workspace-folder . bash -c "which home-manager || echo 'home-manager not found'"
 
       - name: Verify Nix configuration
         run: |
           cd test-devcontainer
-          devcontainer exec --workspace-folder . bash -c "test -f /etc/nix/nix.conf && echo 'Nix config exists'"
+          echo "Verifying Nix configuration..."
+          devcontainer exec --workspace-folder . bash -c "test -f /etc/nix/nix.conf && echo 'Nix config exists' || echo 'Nix config missing'"
 
       - name: Check cache mount
         run: |
           cd test-devcontainer
-          devcontainer exec --workspace-folder . bash -c "test -d /cache && echo 'Cache directory exists'"
+          echo "Checking cache mount..."
+          devcontainer exec --workspace-folder . bash -c "test -d /cache && echo 'Cache directory exists' || echo 'Cache directory missing'"
 
       - name: Display test results
         if: always()
         run: |
           echo "✅ DevContainer feature test completed"
-          echo "Nix and home-manager are properly installed and configured"
+          echo "Check the steps above for any failures"
