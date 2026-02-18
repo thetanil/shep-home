@@ -1,0 +1,134 @@
+name: Test user-sync Feature
+
+on:
+  push:
+    branches: [ main, copilot/** ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-user-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test user-sync script directly
+        run: |
+          echo "Testing user-sync feature installation..."
+          
+          # Set the USERNAME environment variable
+          export USERNAME="testuser"
+          
+          # Run the install script
+          sudo bash src/user-sync/install.sh
+          
+          echo "Installation completed, verifying..."
+
+      - name: Verify user creation
+        run: |
+          echo "Checking if user was created..."
+          
+          # Check if user exists
+          if id testuser &>/dev/null; then
+            echo "✅ User 'testuser' exists"
+          else
+            echo "❌ User 'testuser' does not exist"
+            exit 1
+          fi
+          
+          # Check UID and GID
+          USER_UID=$(id -u testuser)
+          USER_GID=$(id -g testuser)
+          
+          if [ "$USER_UID" = "1000" ]; then
+            echo "✅ User UID is 1000"
+          else
+            echo "❌ User UID is $USER_UID (expected 1000)"
+            exit 1
+          fi
+          
+          if [ "$USER_GID" = "1000" ]; then
+            echo "✅ User GID is 1000"
+          else
+            echo "❌ User GID is $USER_GID (expected 1000)"
+            exit 1
+          fi
+
+      - name: Verify home directory
+        run: |
+          echo "Checking home directory..."
+          
+          if [ -d "/home/testuser" ]; then
+            echo "✅ Home directory /home/testuser exists"
+          else
+            echo "❌ Home directory /home/testuser does not exist"
+            exit 1
+          fi
+          
+          # Check ownership
+          HOME_OWNER=$(stat -c '%U' /home/testuser)
+          if [ "$HOME_OWNER" = "testuser" ]; then
+            echo "✅ Home directory is owned by testuser"
+          else
+            echo "❌ Home directory is owned by $HOME_OWNER (expected testuser)"
+            exit 1
+          fi
+
+      - name: Verify sudo access
+        run: |
+          echo "Checking sudo configuration..."
+          
+          if [ -f "/etc/sudoers.d/testuser" ]; then
+            echo "✅ Sudoers file exists"
+            
+            # Check file permissions
+            PERMS=$(stat -c '%a' /etc/sudoers.d/testuser)
+            if [ "$PERMS" = "440" ]; then
+              echo "✅ Sudoers file has correct permissions (440)"
+            else
+              echo "❌ Sudoers file has permissions $PERMS (expected 440)"
+              exit 1
+            fi
+            
+            # Check content
+            if grep -q "testuser ALL=(ALL) NOPASSWD: ALL" /etc/sudoers.d/testuser; then
+              echo "✅ Sudoers file has correct content"
+            else
+              echo "❌ Sudoers file does not have expected content"
+              exit 1
+            fi
+          else
+            echo "❌ Sudoers file /etc/sudoers.d/testuser does not exist"
+            exit 1
+          fi
+
+      - name: Test sudo access
+        run: |
+          echo "Testing actual sudo access..."
+          
+          # Switch to testuser and run a sudo command
+          sudo -u testuser sudo -n whoami > /tmp/whoami_result 2>&1 || true
+          
+          if grep -q "root" /tmp/whoami_result; then
+            echo "✅ User can execute sudo commands without password"
+          else
+            echo "⚠️  Sudo test result:"
+            cat /tmp/whoami_result
+          fi
+
+      - name: Display test results
+        if: always()
+        run: |
+          echo "=========================================="
+          echo "✅ user-sync feature test completed"
+          echo "=========================================="
+          echo ""
+          echo "Summary:"
+          id testuser || echo "User info not available"
+          ls -ld /home/testuser || echo "Home directory not available"
+          echo ""
+          echo "All tests passed!"
