@@ -34,7 +34,14 @@ mkdir -p "${CONFIG_DIR}"
 if [ -d "${CONFIG_DIR}/.git" ]; then
     echo "Home-manager config repository already exists, pulling latest changes..."
     cd "${CONFIG_DIR}"
-    git pull || echo "Warning: Failed to pull latest changes"
+    git pull || {
+        echo "Warning: Failed to pull latest changes from repository."
+        echo "This could be due to:"
+        echo "  - Network connectivity issues"
+        echo "  - Authentication problems (check your SSH keys or credentials)"
+        echo "  - Local changes that conflict with remote changes"
+        echo "Continuing with existing configuration..."
+    }
 else
     echo "Cloning home-manager configuration repository..."
     # Remove directory if it exists but is not a git repo

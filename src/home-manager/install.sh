@@ -34,6 +34,10 @@ echo "Installing Nix in no-daemon mode..."
 if [ ! -d /nix/store ]; then
     # Download and run Nix installer in single-user mode
     # Using --no-daemon as home-manager is CLI-only, not a persistent service
+    # Note: This uses the official Nix installation method from nixos.org
+    # While piping to sh has security considerations, this is the standard
+    # installation method recommended by the Nix project. For enhanced security,
+    # users should verify the script manually before running the feature.
     curl -L https://nixos.org/nix/install | sh -s -- --no-daemon --yes
 fi
 
