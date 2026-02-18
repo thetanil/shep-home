@@ -42,6 +42,13 @@ if [ "${USERNAME}" != "root" ]; then
   mkdir -p /etc/sudoers.d
   echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" | tee "/etc/sudoers.d/${USERNAME}" > /dev/null
   chmod 0440 "/etc/sudoers.d/${USERNAME}"
+  
+  # Verify the file was created
+  if [ -f "/etc/sudoers.d/${USERNAME}" ]; then
+    echo "✓ Sudoers file /etc/sudoers.d/${USERNAME} created successfully"
+  else
+    echo "✗ Warning: Sudoers file /etc/sudoers.d/${USERNAME} was not created!"
+  fi
 
   echo "Created user '${USERNAME}' with UID 1000, GID 1000"
 else
