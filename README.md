@@ -4,10 +4,16 @@ Personalize shep containers with your own home-manager configuration.
 
 ## Overview
 
-This devcontainer feature installs Nix and home-manager, allowing you to bring your personal home directory configuration to any devcontainer. Your configuration is kept in a private git repository and applied on container startup.
+This repository provides two devcontainer features for setting up personalized development environments:
+
+1. **user-sync**: Creates a user matching the host user for seamless file permissions
+2. **home-manager**: Installs Nix and home-manager, allowing you to bring your personal home directory configuration to any devcontainer
+
+Your configuration is kept in a private git repository and applied on container startup.
 
 ## Features
 
+- **User Synchronization**: Automatically creates a user with UID 1000 matching your host user
 - **Private Configuration**: Keep your home environment configuration in a private git repository
 - **Nix Flakes Support**: Use modern Nix flakes for declarative configuration
 - **Persistent Cache**: Nix cache is mounted at `/cache` and shared across container instances
@@ -17,20 +23,28 @@ This devcontainer feature installs Nix and home-manager, allowing you to bring y
 
 ## Usage
 
-### 1. Add the feature to your devcontainer.json
+### 1. Add the features to your devcontainer.json
+
+It's recommended to use both features together for proper user and home directory setup:
 
 ```json
 {
   "name": "My Dev Container",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
+    "ghcr.io/thetanil/shep-home/user-sync:1": {
+      "username": "vscode"
+    },
     "ghcr.io/thetanil/shep-home/home-manager:1": {}
   },
   "containerEnv": {
     "HOME_MANAGER_GIT_URL": "https://github.com/yourusername/your-home-config.git"
-  }
+  },
+  "remoteUser": "vscode"
 }
 ```
+
+**Note**: The `user-sync` feature should be listed before `home-manager` to ensure the user exists before home-manager runs.
 
 ### 2. Set up your home-manager repository
 
@@ -163,7 +177,25 @@ Mount your git credentials into the container:
 
 ## Options
 
-The feature supports the following options in `devcontainer.json`:
+### user-sync Feature
+
+The user-sync feature supports the following options:
+
+```json
+{
+  "features": {
+    "ghcr.io/thetanil/shep-home/user-sync:1": {
+      "username": "vscode"
+    }
+  }
+}
+```
+
+- `username`: The username to create in the container (default: "devuser"). This should match your intended remote user.
+
+### home-manager Feature
+
+The home-manager feature supports the following options in `devcontainer.json`:
 
 ```json
 {

@@ -23,6 +23,7 @@
   ],
   "onCreateCommand": "bash /usr/local/share/home-manager-setup.sh",
   "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
+    "ghcr.io/devcontainers/features/common-utils",
+    "user-sync"
   ]
 }

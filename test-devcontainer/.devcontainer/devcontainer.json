@@ -3,6 +3,9 @@
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   
   "features": {
+    "./user-sync": {
+      "username": "vscode"
+    },
     "./home-manager": {
       "nixVersion": "25.11"
     }

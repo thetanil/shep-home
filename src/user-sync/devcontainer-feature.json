@@ -1,0 +1,14 @@
+{
+  "name": "user-sync",
+  "id": "user-sync",
+  "version": "1.0.0",
+  "description": "Creates a user matching the host user for seamless file permissions",
+  "options": {
+    "username": {
+      "type": "string",
+      "description": "The username to create (should match host user)",
+      "default": "devuser"
+    }
+  },
+  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+}
