@@ -1,0 +1,28 @@
+{
+  "id": "home-manager",
+  "version": "1.0.0",
+  "name": "Home Manager",
+  "description": "Install Nix and home-manager to manage user home directory configuration from a private git repository",
+  "documentationURL": "https://github.com/thetanil/shep-home",
+  "options": {
+    "nixVersion": {
+      "type": "string",
+      "default": "latest",
+      "description": "Version of Nix to install"
+    }
+  },
+  "containerEnv": {
+    "NIX_CONF_DIR": "/etc/nix"
+  },
+  "mounts": [
+    {
+      "source": "shep-home-nix-cache",
+      "target": "/cache",
+      "type": "volume"
+    }
+  ],
+  "onCreateCommand": "bash /usr/local/share/home-manager-setup.sh",
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

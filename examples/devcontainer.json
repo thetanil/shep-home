@@ -1,0 +1,20 @@
+{
+  "name": "Example Dev Container with home-manager",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  
+  "features": {
+    "ghcr.io/thetanil/shep-home/home-manager:1": {
+      "nixVersion": "latest"
+    }
+  },
+  
+  "containerEnv": {
+    "HOME_MANAGER_GIT_URL": "git@github.com:yourusername/your-home-config.git"
+  },
+  
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+  ],
+  
+  "remoteUser": "vscode"
+}
