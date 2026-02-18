@@ -1,11 +1,17 @@
-name: Test DevContainer Feature
+name: Test DevContainer Feature (Disabled)
 
+# This workflow is currently disabled
+# To re-enable, change the 'on' trigger below
 on:
-  push:
-    branches: [ main, copilot/** ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch:  # Only manual trigger
+
+# Original triggers (disabled):
+# on:
+#   push:
+#     branches: [ main, copilot/** ]
+#   pull_request:
+#     branches: [ main ]
+#   workflow_dispatch:
 
 jobs:
   test-feature:
