@@ -25,8 +25,8 @@ jobs:
           # Set the USERNAME environment variable
           export USERNAME="testuser"
           
-          # Run the install script
-          sudo bash src/user-sync/install.sh
+          # Run the install script (use -E to preserve environment variables)
+          sudo -E bash src/user-sync/install.sh
           
           echo "Installation completed, verifying..."
 

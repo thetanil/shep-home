@@ -9,6 +9,15 @@ echo "Version       : 1.0.0"
 echo "Username      : ${USERNAME}"
 echo "==========================================================================="
 
+# Validate USERNAME is set and not empty
+if [ -z "${USERNAME}" ]; then
+  echo "Error: USERNAME environment variable is not set or is empty"
+  echo "Please set USERNAME before running this script:"
+  echo "  export USERNAME=<your-username>"
+  echo "  sudo -E bash install.sh"
+  exit 1
+fi
+
 # Remove existing regular users (UID >= 1000, except nobody)
 # This ensures we don't conflict with users created by base images
 getent passwd \
