@@ -169,13 +169,13 @@ The feature supports the following options in `devcontainer.json`:
 {
   "features": {
     "ghcr.io/thetanil/shep-home/home-manager:1": {
-      "nixVersion": "latest"
+      "nixVersion": "25.11"
     }
   }
 }
 ```
 
-- `nixVersion`: Version of Nix to install (default: "latest"). While "latest" installs the most recent version, it's recommended to use the current LTS version (25.11) for stability.
+- `nixVersion`: Version of Nix and home-manager to install (default: "25.11" - the current LTS version). You can also use "latest" for the most recent version, but LTS is recommended for stability.
 
 ## Troubleshooting
 

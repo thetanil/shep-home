@@ -7,7 +7,7 @@ set -e
 echo "Installing Nix and home-manager..."
 
 # Get the version option
-NIX_VERSION="${NIXVERSION:-latest}"
+NIX_VERSION="${NIXVERSION:-25.11}"
 
 # Ensure we're running as root for installation
 if [ "$(id -u)" -ne 0 ]; then
@@ -59,8 +59,14 @@ chmod +x /etc/profile.d/nix.sh
 
 # Install home-manager using nix
 echo "Installing home-manager..."
-# Pin to LTS version 25.11 (can use "latest" for most recent, but LTS is recommended for stability)
-nix-channel --add https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz home-manager
+# Use the version specified in nixVersion option (defaults to LTS 25.11)
+if [ "$NIX_VERSION" = "latest" ]; then
+    # Use master branch for latest
+    nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+else
+    # Use release branch for specific version
+    nix-channel --add https://github.com/nix-community/home-manager/archive/release-${NIX_VERSION}.tar.gz home-manager
+fi
 nix-channel --update
 
 # Install home-manager

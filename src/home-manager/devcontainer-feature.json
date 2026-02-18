@@ -7,8 +7,8 @@
   "options": {
     "nixVersion": {
       "type": "string",
-      "default": "latest",
-      "description": "Version of Nix to install"
+      "default": "25.11",
+      "description": "Version of Nix to install (defaults to LTS version 25.11)"
     }
   },
   "containerEnv": {
