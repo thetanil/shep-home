@@ -3,7 +3,7 @@
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   
   "features": {
-    "../../src/home-manager": {
+    "./home-manager": {
       "nixVersion": "25.11"
     }
   },
