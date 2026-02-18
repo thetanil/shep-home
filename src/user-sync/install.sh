@@ -18,9 +18,9 @@ getent passwd \
 # Create the user if not root
 if [ "${USERNAME}" != "root" ]; then
   # Remove any existing group with GID 1000 (may be leftover from deleted users)
-  EXISTING_GROUP=$(getent group 1000 | cut -d: -f1 || true)
-  if [ -n "$EXISTING_GROUP" ]; then
-    groupdel "$EXISTING_GROUP" 2>/dev/null || true
+  EXISTING_GID_1000_GROUP=$(getent group 1000 | cut -d: -f1 || true)
+  if [ -n "$EXISTING_GID_1000_GROUP" ]; then
+    groupdel "$EXISTING_GID_1000_GROUP" 2>/dev/null || true
   fi
 
   # Create group with GID 1000
