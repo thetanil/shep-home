@@ -1,0 +1,12 @@
+{
+  "name": "Test Home Manager Feature",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  
+  "features": {
+    "./src/home-manager": {
+      "nixVersion": "25.11"
+    }
+  },
+  
+  "remoteUser": "vscode"
+}

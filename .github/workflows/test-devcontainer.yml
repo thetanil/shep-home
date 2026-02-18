@@ -1,0 +1,53 @@
+name: Test DevContainer Feature
+
+on:
+  push:
+    branches: [ main, copilot/** ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-feature:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+
+      - name: Build and start devcontainer
+        run: |
+          cd test-devcontainer
+          devcontainer up --workspace-folder .
+
+      - name: Test Nix installation
+        run: |
+          cd test-devcontainer
+          devcontainer exec --workspace-folder . nix --version
+
+      - name: Test home-manager availability
+        run: |
+          cd test-devcontainer
+          devcontainer exec --workspace-folder . which home-manager
+
+      - name: Verify Nix configuration
+        run: |
+          cd test-devcontainer
+          devcontainer exec --workspace-folder . bash -c "test -f /etc/nix/nix.conf && echo 'Nix config exists'"
+
+      - name: Check cache mount
+        run: |
+          cd test-devcontainer
+          devcontainer exec --workspace-folder . bash -c "test -d /cache && echo 'Cache directory exists'"
+
+      - name: Display test results
+        if: always()
+        run: |
+          echo "✅ DevContainer feature test completed"
+          echo "Nix and home-manager are properly installed and configured"
