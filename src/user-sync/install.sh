@@ -40,7 +40,7 @@ if [ "${USERNAME}" != "root" ]; then
 
   # Set up passwordless sudo
   mkdir -p /etc/sudoers.d
-  echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${USERNAME}"
+  echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" | tee "/etc/sudoers.d/${USERNAME}" > /dev/null
   chmod 0440 "/etc/sudoers.d/${USERNAME}"
 
   echo "Created user '${USERNAME}' with UID 1000, GID 1000"
