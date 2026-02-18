@@ -59,7 +59,8 @@ chmod +x /etc/profile.d/nix.sh
 
 # Install home-manager using nix
 echo "Installing home-manager..."
-nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+# Pin to LTS version 25.11 (can use "latest" for most recent, but LTS is recommended for stability)
+nix-channel --add https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz home-manager
 nix-channel --update
 
 # Install home-manager

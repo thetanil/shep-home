@@ -4,9 +4,9 @@
   # Home Manager configuration
   # This file defines your personal environment setup
   
-  home.username = "vscode";  # Change to your username
-  home.homeDirectory = "/home/vscode";  # Change to match your home directory
-  home.stateVersion = "23.11";  # Don't change this after first run
+  home.username = "vscode";  # Automatically set from host/container username
+  home.homeDirectory = "/home/vscode";  # Automatically resolves to /home/${username}
+  home.stateVersion = "25.11";  # Don't change this after first run
 
   # Packages to install in your environment
   home.packages = with pkgs; [

@@ -50,16 +50,16 @@ Example `flake.nix`:
   description = "Home Manager configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixpkgs/nixpkgs/nixos-25.11";  # Pinned to LTS version 25.11
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
   outputs = { nixpkgs, home-manager, ... }: {
     homeConfigurations = {
-      # Replace with your username
+      # Replace with your username (or use your container username)
       myuser = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [ ./home.nix ];
@@ -75,9 +75,10 @@ Example `home.nix`:
 { config, pkgs, ... }:
 
 {
-  home.username = "myuser";
-  home.homeDirectory = "/home/myuser";
-  home.stateVersion = "23.11";
+  # Note: username and homeDirectory are typically set dynamically from the container environment
+  home.username = "myuser";  # Will match your container username
+  home.homeDirectory = "/home/myuser";  # Will match your container home directory
+  home.stateVersion = "25.11";
 
   programs.git = {
     enable = true;
@@ -174,7 +175,7 @@ The feature supports the following options in `devcontainer.json`:
 }
 ```
 
-- `nixVersion`: Version of Nix to install (default: "latest")
+- `nixVersion`: Version of Nix to install (default: "latest"). While "latest" installs the most recent version, it's recommended to use the current LTS version (25.11) for stability.
 
 ## Troubleshooting
 
