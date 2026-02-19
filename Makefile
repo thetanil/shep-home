@@ -1,7 +1,21 @@
-.PHONY: ensure-devcontainer test
+.PHONY: ensure-devcontainer test shell
 
 ensure-devcontainer:
 	@command -v devcontainer >/dev/null 2>&1 || npm install -g @devcontainers/cli
 
 test: ensure-devcontainer
 	devcontainer features test --features user-sync
+
+shell: ensure-devcontainer
+	@set -e; \
+	tmp=$$(mktemp -d); \
+	mkdir "$$tmp/.devcontainer"; \
+	cp -r "$(CURDIR)/src/user-sync" "$$tmp/.devcontainer/user-sync"; \
+	printf '{\n  "image": "debian:trixie-slim",\n  "features": {"./user-sync": {}},\n  "remoteUser": "$${localEnv:USER}",\n  "updateContainerUserID": true\n}\n' \
+		> "$$tmp/.devcontainer/devcontainer.json"; \
+	up=$$(devcontainer up --workspace-folder "$$tmp"); \
+	echo "$$up"; \
+	container=$$(echo "$$up" | tail -1 | python3 -c 'import sys,json; print(json.load(sys.stdin)["containerId"])'); \
+	docker exec -it "$$container" bash; \
+	docker rm -f "$$container" 2>/dev/null || true; \
+	rm -rf "$$tmp"
