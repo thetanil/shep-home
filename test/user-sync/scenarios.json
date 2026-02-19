@@ -1,0 +1,9 @@
+{
+    "host-user": {
+        "image": "debian:trixie-slim",
+        "features": {
+            "user-sync": {}
+        },
+        "remoteUser": "${localEnv:USER}"
+    }
+}

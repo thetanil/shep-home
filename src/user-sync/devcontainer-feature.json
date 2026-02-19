@@ -6,9 +6,11 @@
   "options": {
     "username": {
       "type": "string",
-      "description": "The username to create (should match host user)",
-      "default": "devuser"
+      "description": "Optional. Username to create. If omitted or set to 'automatic', the feature will use the effective dev container user (for example the remoteUser)",
+      "default": "automatic"
     }
   },
-  "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
 }

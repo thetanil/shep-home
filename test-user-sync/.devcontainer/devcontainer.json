@@ -1,12 +1,10 @@
 {
-  "name": "Test User Sync Feature",
+  "name": "(Deprecated) Test User Sync Feature",
   "image": "debian:trixie-slim",
-  
   "features": {
-    "../../src/user-sync": {
+    "./features/user-sync": {
       "username": "testuser"
     }
   },
-  
   "remoteUser": "testuser"
 }

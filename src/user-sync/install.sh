@@ -1,10 +1,34 @@
 #!/bin/bash
 set -e
 
-# Get username from devcontainer feature option
-# Feature options are passed as uppercase env vars with underscores
-# For option "username", the env var is "USERNAME"
-USERNAME="${USERNAME:-devuser}"
+# Determine the username to create.
+# Feature options are passed as uppercase env vars with underscores.
+# For option "username", the env var is "USERNAME".
+#
+# Behavior:
+# - If USERNAME is set to a non-empty value other than 'automatic', use it.
+# - Otherwise, derive it from the effective dev container user (remoteUser),
+#   falling back to a sensible non-root default.
+
+RAW_USERNAME="${USERNAME:-automatic}"
+
+if [ -z "${RAW_USERNAME}" ] || [ "${RAW_USERNAME}" = "automatic" ]; then
+  # Prefer the effective remote user, if provided by the devcontainer CLI.
+  # See: https://containers.dev/implementors/features/#user-env-var
+  if [ -n "${_REMOTE_USER}" ] && [ "${_REMOTE_USER}" != "root" ]; then
+    USERNAME="${_REMOTE_USER}"
+  elif [ -n "${_CONTAINER_USER}" ] && [ "${_CONTAINER_USER}" != "root" ]; then
+    USERNAME="${_CONTAINER_USER}"
+  else
+    # As a final fallback, try the UID 1000 account, or default to 'devcontainer'.
+    USERNAME="$(getent passwd 1000 | cut -d: -f1 || true)"
+    if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "root" ]; then
+      USERNAME="devcontainer"
+    fi
+  fi
+else
+  USERNAME="${RAW_USERNAME}"
+fi
 
 echo "==========================================================================="
 echo "Feature       : user-sync"
@@ -16,8 +40,8 @@ echo "==========================================================================
 
 # Validate USERNAME is set and not empty
 if [ -z "${USERNAME}" ]; then
-  echo "Error: USERNAME is not set"
-  echo "Please set USERNAME in devcontainer feature options"
+  echo "Error: USERNAME could not be determined"
+  echo "Please either set the 'username' option explicitly or ensure the devcontainer CLI is providing a non-root remoteUser."
   exit 1
 fi
 
