@@ -14,7 +14,6 @@ test/user-sync/
   host-user.sh                — scenario test script
   scenarios.json              — scenario definitions
 
-.github/workflows/test-user-sync.yml
 Makefile
 ```
 
