@@ -1,0 +1,16 @@
+{
+  "name": "user-sync",
+  "id": "user-sync",
+  "version": "1.0.0",
+  "description": "Creates a user matching the host user for seamless file permissions",
+  "options": {
+    "username": {
+      "type": "string",
+      "description": "Optional. Username to create. If omitted or set to 'automatic', the feature will use the effective dev container user (for example the remoteUser)",
+      "default": "automatic"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

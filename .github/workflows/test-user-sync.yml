@@ -1,0 +1,24 @@
+name: Test user-sync feature
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+
+      - name: Test user-sync feature
+        run: devcontainer features test --features user-sync
