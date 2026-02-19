@@ -11,7 +11,7 @@ USERNAME="$(getent passwd 1000 | cut -d: -f1 || true)"
 if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "root" ]; then
   echo "No non-root user at UID 1000 found; skipping home-manager configuration."
   echo "Ensure the user-sync feature runs before shep-home in real usage."
-  exit 0
+  exit 1
 fi
 
 echo "==========================================================================="
@@ -47,7 +47,9 @@ chown -R "${USERNAME}:${USERNAME}" "${CONFIG_DEST}"
 echo "Running home-manager switch as ${USERNAME}..."
 su - "${USERNAME}" -c "
   set -e
+  echo 'whoami: \$(whoami), home: \${HOME}'
   # shellcheck disable=SC1090
+  sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --no-daemon
   source \"\${HOME}/.nix-profile/etc/profile.d/nix.sh\"
   nix run home-manager/master -- switch --flake \"\${HOME}/.config/home-manager\"
 "

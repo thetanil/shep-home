@@ -1,0 +1,7 @@
+{
+    "image": "debian:trixie-slim",
+    "features": {
+        "../src/user-sync": {},
+        "../src/shep-home": {}
+    },
+}
