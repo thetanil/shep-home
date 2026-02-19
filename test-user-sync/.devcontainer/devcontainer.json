@@ -1,0 +1,12 @@
+{
+  "name": "Test User Sync Feature",
+  "image": "debian:trixie-slim",
+  
+  "features": {
+    "../../src/user-sync": {
+      "username": "testuser"
+    }
+  },
+  
+  "remoteUser": "testuser"
+}

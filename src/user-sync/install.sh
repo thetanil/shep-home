@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Get username from devcontainer feature option
+# Feature options are passed as uppercase env vars with underscores
+# For option "username", the env var is "USERNAME"
+USERNAME="${USERNAME:-devuser}"
+
 echo "==========================================================================="
 echo "Feature       : user-sync"
 echo "Description   : Creates user matching host for file permission sync"
@@ -11,10 +16,8 @@ echo "==========================================================================
 
 # Validate USERNAME is set and not empty
 if [ -z "${USERNAME}" ]; then
-  echo "Error: USERNAME environment variable is not set or is empty"
-  echo "Please set USERNAME before running this script:"
-  echo "  export USERNAME=<your-username>"
-  echo "  sudo -E bash install.sh"
+  echo "Error: USERNAME is not set"
+  echo "Please set USERNAME in devcontainer feature options"
   exit 1
 fi
 
