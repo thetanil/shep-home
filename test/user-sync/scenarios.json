@@ -4,6 +4,7 @@
         "features": {
             "user-sync": {}
         },
-        "remoteUser": "${localEnv:USER}"
+        "remoteUser": "${localEnv:USER}",
+        "updateContainerUserID": true
     }
 }
