@@ -1,0 +1,17 @@
+{
+  "name": "shep-home",
+  "id": "shep-home",
+  "version": "1.0.0",
+  "description": "Installs Nix (single-user) and applies a home-manager flake configuration as the user-sync user",
+  "options": {
+    "configUrl": {
+      "type": "string",
+      "description": "Git URL of a repo containing flake.nix + home.nix. Use 'bundled' to use the example config shipped with this feature.",
+      "default": "bundled"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/nix",
+    "./user-sync"
+  ]
+}

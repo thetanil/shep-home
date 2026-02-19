@@ -1,10 +1,15 @@
-.PHONY: ensure-devcontainer test shell
+.PHONY: ensure-devcontainer test test-user-sync test-shep-home shell
 
 ensure-devcontainer:
 	@command -v devcontainer >/dev/null 2>&1 || npm install -g @devcontainers/cli
 
-test: ensure-devcontainer
+test: ensure-devcontainer test-user-sync test-shep-home
+
+test-user-sync: ensure-devcontainer
 	devcontainer features test --features user-sync
+
+test-shep-home: ensure-devcontainer
+	devcontainer features test --features shep-home
 
 shell: ensure-devcontainer
 	@set -e; \

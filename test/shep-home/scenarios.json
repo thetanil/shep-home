@@ -1,0 +1,12 @@
+{
+  "default": {
+    "image": "debian:trixie-slim",
+    "features": {
+      "ghcr.io/devcontainers/features/nix:1": { "multiUser": false },
+      "user-sync": {},
+      "shep-home": {}
+    },
+    "remoteUser": "${localEnv:USER}",
+    "updateContainerUserID": true
+  }
+}
