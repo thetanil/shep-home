@@ -5,10 +5,14 @@ set -e
 # CONFIGURL is the feature option (uppercase env var).
 CONFIGURL="${CONFIGURL:-bundled}"
 
-# shep-home requires user-sync to have already created the UID-1000 user.
+# shep-home requires user-sync to have already created the target user.
+# Most systems use UID 1000; GH runners use UID 1001.
 USERNAME="$(getent passwd 1000 | cut -d: -f1 || true)"
 if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "root" ]; then
-  echo "No non-root user at UID 1000 found; skipping home-manager configuration."
+  USERNAME="$(getent passwd 1001 | cut -d: -f1 || true)"
+fi
+if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "root" ]; then
+  echo "No non-root user at UID 1000 or 1001 found; skipping home-manager configuration."
   echo "Ensure the user-sync feature runs before shep-home in real usage."
   exit 1
 fi
