@@ -5,13 +5,16 @@ set -e
 # CONFIGURL is the feature option (uppercase env var).
 CONFIGURL="${CONFIGURL:-bundled}"
 
-# shep-home requires user-sync to have already created the UID-1000 user.
-# If no such user exists (e.g. standalone test run), skip gracefully.
+# shep-home requires user-sync to have already created the target user.
+# Most systems use UID 1000; GH runners use UID 1001.
 USERNAME="$(getent passwd 1000 | cut -d: -f1 || true)"
 if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "root" ]; then
-  echo "No non-root user at UID 1000 found; skipping home-manager configuration."
+  USERNAME="$(getent passwd 1001 | cut -d: -f1 || true)"
+fi
+if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "root" ]; then
+  echo "No non-root user at UID 1000 or 1001 found; skipping home-manager configuration."
   echo "Ensure the user-sync feature runs before shep-home in real usage."
-  exit 0
+  exit 1
 fi
 
 echo "==========================================================================="
@@ -41,15 +44,24 @@ fi
 
 chown -R "${USERNAME}:${USERNAME}" "${CONFIG_DEST}"
 
+# Enable nix-command and flakes for the user so home-manager can run.
+mkdir -p "${USER_HOME}/.config/nix"
+echo 'experimental-features = nix-command flakes' > "${USER_HOME}/.config/nix/nix.conf"
+mkdir -p "${USER_HOME}/.config/systemd/user"
+chown -R "${USERNAME}:${USERNAME}" "${USER_HOME}/.config"
+
 # ---------------------------------------------------------------------------
-# 2. Run home-manager as the target user
+# 2. Install deps, then run Nix + home-manager at build time
 # ---------------------------------------------------------------------------
+apt-get update -y
+apt-get install -y --no-install-recommends curl ca-certificates xz-utils git sudo
+
 echo "Running home-manager switch as ${USERNAME}..."
-su - "${USERNAME}" -c "
+su - "${USERNAME}" -c '
   set -e
-  # shellcheck disable=SC1090
-  source \"\${HOME}/.nix-profile/etc/profile.d/nix.sh\"
-  nix run home-manager/master -- switch --flake \"\${HOME}/.config/home-manager\"
-"
+  sh <(curl --proto '"'"'=https'"'"' --tlsv1.2 -L https://nixos.org/nix/install) --no-daemon
+  . "${HOME}/.nix-profile/etc/profile.d/nix.sh"
+  nix run home-manager/master -- switch --flake "${HOME}/.config/home-manager#'"${USERNAME}"'" --impure -b backup
+'
 
 echo "shep-home: done."
