@@ -91,3 +91,46 @@ rather than hardcoding a name.
 2. Create `test/<name>/test.sh` and optionally `test/<name>/scenarios.json`
 3. Add a make target: `devcontainer features test --features <name>`
 4. Add a GitHub Actions job to `.github/workflows/`
+
+## Nix single-user install gotchas (shep-home)
+
+### PATH / profile sourcing
+
+- Immediately after the Nix installer runs, source it via `~/.nix-profile/etc/profile.d/nix.sh`.
+- **After `home-manager switch` runs, it overwrites `~/.nix-profile`** to point at its own
+  generation profile (e.g. `/home/user/.local/state/nix/profiles/profile`). That profile does
+  NOT contain `etc/profile.d/nix.sh`. So source `nix.sh` before `home-manager switch`, never after.
+- `/nix/var/nix/profiles/default` does NOT exist for single-user installs (daemon mode only).
+  `/nix/var/nix/profiles/per-user/<user>/profile/etc/profile.d/nix.sh` also does not exist.
+  The only reliable path is `~/.nix-profile/etc/profile.d/nix.sh` pre-switch.
+- In **test scripts**, home-manager has already moved `~/.nix-profile`. Do not try to source
+  `nix.sh`. Instead prepend `~/.nix-profile/bin` to PATH directly:
+  `PATH=${TARGET_HOME}/.nix-profile/bin:$PATH nix --version`
+
+### experimental-features
+
+- Enable before running `nix run` by writing to `~/.config/nix/nix.conf` as root:
+  `experimental-features = nix-command flakes`
+- Create `~/.config/nix/` and `~/.config/systemd/user/` as root before the `su` block,
+  then `chown -R` to the user. `mkdir` inside the `su` block will fail with permission denied.
+
+### home-manager switch flags
+
+- `-b backup` — avoid failing on existing files like `.bashrc`, `.profile`
+- `--impure` — required so `builtins.getEnv` works in the flake
+- `--flake "path#username"` — must be explicit; pure evaluation makes `builtins.getEnv "USER"`
+  return an empty string, producing `homeConfigurations.""` which doesn't match anything
+
+### Quoting inside `su -c '...'`
+
+- The block is single-quoted. Embed single quotes with `'"'"'`.
+- Outer-script variables (e.g. `${USERNAME}`) must be interpolated outside the single-quoted
+  region: `'"${USERNAME}"'`.
+
+### devcontainer test framework behaviour
+
+- Test scripts run as `remoteUser` (UID 1000 user), not root. `su` requires a password — don't use it in tests.
+- Use absolute paths (`${TARGET_HOME}`) not `~`, since HOME may differ depending on who runs the script.
+- The test framework does NOT wait for entrypoint scripts — don't rely on entrypoints for anything tests need.
+- BuildKit layer cache persists even after removing named images. `docker builder prune -af` forces
+  a clean rebuild but clears cache for all projects.

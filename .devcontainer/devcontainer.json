@@ -3,5 +3,5 @@
     "features": {
         "../src/user-sync": {},
         "../src/shep-home": {}
-    },
+    }
 }
